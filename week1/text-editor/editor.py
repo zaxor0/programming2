@@ -17,11 +17,11 @@ class Editor():
         # preserve the last state
         self.last_state = self.current_state
         # push onto stack
-        top = self.__stack.peak() if self.__stack.size() > 0 else ''
+        top = self.__stack.peek() if self.__stack.size() > 0 else ''
         new = top + s
         self.__stack.push(new)
         # update current state
-        self.current_state = self.__stack.peak()
+        self.current_state = self.__stack.peek()
 
     def delete_last(self, n: int):
         self.last_state = self.current_state
@@ -29,11 +29,11 @@ class Editor():
         latest = self.__stack.stack[older_position]
         self.__stack.push(latest)
         # update current state
-        self.current_state = self.__stack.peak()
+        self.current_state = self.__stack.peek()
 
     def undo(self):
         try:
             self.last_state = self.__stack.pop()
-            self.current_state = self.__stack.peak()
+            self.current_state = self.__stack.peek()
         except:
             raise IndexError("No more changes to undo")

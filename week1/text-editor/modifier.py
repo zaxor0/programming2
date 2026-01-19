@@ -9,7 +9,7 @@ class Modifier():
         last = self.stack.pop()
         return last
 
-    def peak(self):
+    def peek(self):
         return self.stack[-1]
 
     def size(self):
