@@ -4,36 +4,58 @@ from current_state import CurrentState
 class Editor():
     def __init__(self):
         # public variables
-        self.current_state = CurrentState()
-        self.last_state = ''
-        # private stack
+        self.current_state = CurrentState('')
+        # private variables
         self.__stack = Modifier()
 
     def __str__(self):
-        info = f"{self.current_state}" #\t\t  {self.last_state}"
-        return info
+        return f"{self.current_state}"
 
-    def insert(self, s: str):
-        # preserve the last state
-        self.last_state = self.current_state
-        # push onto stack
-        top = self.__stack.peek() if self.__stack.size() > 0 else ''
-        new = top + s
-        self.__stack.push(new)
+    ## PRIVATE METHODS
+    def __save_latest(self):
+        # push that last state on the stack
+        self.__stack.push(self.current_state)
+
+    def __get_last_state(self):
+        last_state = ''
+        if self.__stack.size() > 0:
+            last_state = str(self.__stack.peek())
+        return last_state
+
+    def __update_current(self, s:str):
+        # create a string for the new object
+        new_content = self.__get_last_state() + s
+        # create a new object for the stack
+        self.current_state = CurrentState(new_content)
+
+    def __erase_characters(self, n:int):
+        # create a string based on a subset of characters from the current state
+        new_content = str(self.current_state)[:-n]
         # update current state
-        self.current_state = self.__stack.peek()
+        self.current_state = CurrentState(new_content)
+
+    def __roll_back(self):
+        if self.__stack.size() > 0:
+            self.current_state = self.__stack.pop()
+
+    def __print_stack(self):
+        print(self.__stack)
+
+    ## PUBLIC METHODS ##
+    def insert(self, s: str):
+        # add the most recent state to the stack
+        self.__save_latest()
+        # update the current state with user entered string
+        self.__update_current(s)
 
     def delete_last(self, n: int):
-        self.last_state = self.current_state
-        older_position = -(n + 1)
-        latest = self.__stack.stack[older_position]
-        self.__stack.push(latest)
-        # update current state
-        self.current_state = self.__stack.peek()
+        # add the most recent state to the stack
+        self.__save_latest()
+        # revert to a previously state
+        self.__erase_characters(n)
+
+    def print_history(self):
+        self.__print_stack()
 
     def undo(self):
-        try:
-            self.last_state = self.__stack.pop()
-            self.current_state = self.__stack.peek()
-        except:
-            raise IndexError("No more changes to undo")
+        self.__roll_back()
