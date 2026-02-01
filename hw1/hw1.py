@@ -37,13 +37,13 @@ class History:
 class Document:
     def __init__(self) -> None:
         self._content = ""
-        self._font_name = "default font"
+        self._font_name = "Times"
         self._font_size = 12
         self._history = History()
 
     # private methods
     def _create_state(self) -> DocumentState:
-        return DocumentState(self._content, self.font_name, self.font_size)
+        return DocumentState(self._content, self._font_name, self._font_size)
 
     def _load_state_from_history(self, state: DocumentState) -> None:
         self._content = state.content
@@ -51,12 +51,24 @@ class Document:
         self._font_size = state.font_size
 
     def _save_history_before_change(self) -> None:
-        self.history.push(self._create_state())
+        self._history.push(self._create_state())
 
     # public methods
     def insert(self, text: str) -> None:
         self._save_history_before_change()
-        self.content += text
+        self._content += text
+    
+    def set_font_type(self, f:str) -> None:
+        if f not in [ 'Times', 'Arial', 'Sans', 'Wingdings' ]:
+            raise ValueError(f"{f} is not an available font, choose from ")
+        self._save_history_before_change()
+        self._font_name = f
+
+    def set_font_size(self, n) -> None:
+        if n <= 0:
+            raise ValueError("n must be positive")
+        self._save_history_before_change()
+        self._font_size = n
 
     def delete_last(self, n) -> None:
         if n <= 0:
@@ -65,17 +77,39 @@ class Document:
         self.content = self.content[:-n] if n <= len(self._content) else ""
 
     def undo(self)-> None:
-        prev = self._history.pop()
-        if prev is None:
-            return
-        self._set_content_from_history(prev)
+        if self._history.size() > 0:
+            prev = self._history.pop()
+            self._load_state_from_history(prev)
 
     def __str__(self) -> str:
-        return self._content
+        doc_details = f"[ Font: {self._font_name} | Size: {self._font_size} ]\n{self._content}\n\n"
+        return doc_details
 
 
 def main():
-    print("Welcome")
+    new_doc = Document()
+    new_doc.insert("Hello")
+    print(new_doc)   
+    new_doc.set_font_size(13)
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.set_font_type("Arial")
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.insert(" World!")
+    print(new_doc)   
+    new_doc.insert("!!")
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
 
 if __name__ == "__main__":
     main()
