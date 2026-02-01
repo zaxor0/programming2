@@ -1,0 +1,33 @@
+---
+title: Document Editor
+---
+classDiagram
+    Document "1" *-- History
+    Document ..> DocumentState
+    History *-- "0..*" DocumentState
+    class Document{
+        -string _content
+        -string _font_name
+        -int _font_size
+        -_create_state() DocumentState
+        -_load_state_from_history() None
+        -_save_history_before_change() None
+        +insert() None
+        +set_font_type() None
+        +set_dont_size() None
+        +delete_last() None
+        +undo() None
+        +__str__() string
+    }
+    class History{
+        -list _history
+        +push() None
+        +pop() DocumentState
+        +size() int
+    }
+    class DocumentState{
+        +string content
+        +string font_name
+        +int font_size
+    }
+

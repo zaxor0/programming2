@@ -9,29 +9,22 @@ class DocumentState:
 
 # the caretaker, history of changes made in the document, basically a stack
 class History:
-    def __init__(self):
+    def __init__(self) -> None:
         self.stack = []
 
-    # debugging method
-    def __str__(self):
-        history = ''
-        for text in self.stack:
-            history += str(text) + ' | '
-        return history
-
-    def push(self, s: str):
+    # stack methods
+    def push(self, s: str) -> None:
         self.stack.append(s)
 
-    def pop(self):
+    def pop(self) -> DocumentState:
         last = self.stack.pop()
         return last
 
-    def peek(self):
+    def peek(self) -> DocumentState:
         return self.stack[-1]
 
-    def size(self):
+    def size(self) -> int:
         return len(self.stack)
-
 
 # the originator
 class Document:
@@ -59,7 +52,7 @@ class Document:
         self._content += text
     
     def set_font_type(self, f:str) -> None:
-        if f not in [ 'Times', 'Arial', 'Sans', 'Wingdings' ]:
+        if f not in [ 'Times', 'Arial', 'Courier', 'Wingdings' ]:
             raise ValueError(f"{f} is not an available font, choose from ")
         self._save_history_before_change()
         self._font_name = f
@@ -77,12 +70,13 @@ class Document:
         self.content = self.content[:-n] if n <= len(self._content) else ""
 
     def undo(self)-> None:
+        print("# Undo action called!")
         if self._history.size() > 0:
             prev = self._history.pop()
             self._load_state_from_history(prev)
 
     def __str__(self) -> str:
-        doc_details = f"[ Font: {self._font_name} | Size: {self._font_size} ]\n{self._content}\n\n"
+        doc_details = f"[ Font: {self._font_name} | Size: {self._font_size} ]\n{self._content}\n"
         return doc_details
 
 
@@ -92,15 +86,21 @@ def main():
     print(new_doc)   
     new_doc.set_font_size(13)
     print(new_doc)   
-    new_doc.undo()
+    new_doc.set_font_size(14)
     print(new_doc)   
     new_doc.set_font_type("Arial")
+    print(new_doc)   
+    new_doc.set_font_type("Courier")
     print(new_doc)   
     new_doc.undo()
     print(new_doc)   
     new_doc.insert(" World!")
     print(new_doc)   
     new_doc.insert("!!")
+    print(new_doc)   
+    new_doc.undo()
+    print(new_doc)   
+    new_doc.undo()
     print(new_doc)   
     new_doc.undo()
     print(new_doc)   
