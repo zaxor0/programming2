@@ -2,6 +2,7 @@
 
 # the memento, the class that stores the state of the originator (document)
 class DocumentState:
+    # new attributes to documents need to added to this class as well as the Document class
     def __init__(self, content:str, font_name:str, font_size:int) -> None:
         self.content = content
         self.font_name = font_name
@@ -28,6 +29,8 @@ class History:
 
 # the originator
 class Document:
+    # new attributes need to be added to __init__, _create_state, and _load_state_from_history
+    # as welll as to the DocumentState class
     def __init__(self) -> None:
         self._content = ""
         self._font_name = "Times"
@@ -53,7 +56,7 @@ class Document:
     
     def set_font_type(self, f:str) -> None:
         if f not in [ 'Times', 'Arial', 'Courier', 'Wingdings' ]:
-            raise ValueError(f"{f} is not an available font, choose from ")
+            raise ValueError(f"{f} is not an available font")
         self._save_history_before_change()
         self._font_name = f
 
