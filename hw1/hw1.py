@@ -30,7 +30,7 @@ class History:
 # the originator
 class Document:
     # new attributes need to be added to __init__, _create_state, and _load_state_from_history
-    # as welll as to the DocumentState class
+    # as well as to the DocumentState class
     def __init__(self) -> None:
         self._content = ""
         self._font_name = "Times"
@@ -60,13 +60,13 @@ class Document:
         self._save_history_before_change()
         self._font_name = f
 
-    def set_font_size(self, n) -> None:
+    def set_font_size(self, n:int) -> None:
         if n <= 0:
             raise ValueError("n must be positive")
         self._save_history_before_change()
         self._font_size = n
 
-    def delete_last(self, n) -> None:
+    def delete_last(self, n:int) -> None:
         if n <= 0:
             raise ValueError("n must be positive")
         self._save_history_before_change()
