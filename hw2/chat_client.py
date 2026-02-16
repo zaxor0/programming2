@@ -4,14 +4,26 @@ from base64 import b64encode
 
 # Why I chose the Strategy Pattern
 """
-Problems with State in our use case:
-1. The state model is used when the object itself is changing, but in our case it is not the client object but the *message* that is changing.
-2. The class behavior (ChatClient) does not depend on a state, it will send messages the same way for each message transformation type.
+Problems with original implementation:
+    1. What are the design problems with ChatClient?
+        - The client doesnt need to know what algorithm we are using to modify the message
+        - It exposes our algorithms we use on the message
+    2. Why does the use of conditionals make the code hard to extend and maintain?
+        - When we need to add any new ways of sending a messages, we have to add another if statement inside the send method.
+        - Any changes, modifications, or variations made have to occur in the main class
+        - Any bugs would be difficult to troubleshoot
+
+Problems with State for our use case:
+    1. The state model is used when the object itself is changing, but in our case it is not the client object but the *message* that is changing.
+    2. The class behavior (ChatClient) does not depend on a state, it will send messages the same way for each message transformation type.
+
 Why Strategy works:
-1. We are always doing the same task, sending a message, we just want to do this task in different ways. 
-2. We can replace the many behaviors (all the ifs / conditionals) by moving behavior specific strategies into individual classes. 
-3. Now we no longer need those conditionals, and the client or user can simply select the desired behavior. 
+    1. We are always doing the same task, sending a message, we just want to do this task in different ways. 
+    2. We can replace the many behaviors (all the ifs / conditionals) by moving behavior specific strategies into individual classes. 
+    3. Now we no longer need those conditionals, and the client or user can simply select the desired behavior. 
+
 Therefore, it is more appropriate for the user to select a 'strategy' for how to manipulate the message.
+
 Additionally, we can easily add more classes (see my Base64 example) to extend the features of the chat client. 
 """
 
