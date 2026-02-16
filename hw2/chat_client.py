@@ -24,6 +24,7 @@ class Mode(ABC):
 
 # concrete strategies
 class PlainText(Mode):
+    # no modifications made
     def transform_message(self, message: str) -> str:
         processed = message
         return processed
@@ -32,6 +33,7 @@ class PlainText(Mode):
         return "PLAIN"
 
 class Encrypted(Mode):
+    # sends in reverse, could swap for a real encryption algorithm later on
     def transform_message(self, message: str) -> str:
         processed = message[::-1]
         return processed
@@ -40,6 +42,7 @@ class Encrypted(Mode):
         return "ENCRYPTED"
 
 class Compressed(Mode):
+    # compresses by removing vowels
     def transform_message(self, message: str) -> str:
         processed = "".join(ch for ch in message if ch.lower() not in "aeiou")
         return processed
@@ -48,6 +51,7 @@ class Compressed(Mode):
         return "COMPRESSED"
 
 class Base64(Mode):
+    # converts the message to a base64 string
     def transform_message(self, message: str) -> str:
         # the base64 method doesn't work with a string, I had to convert it to a "bytes-like object" using encode()
         # however, this returns as a bytes object, and I want a string, so I had to then use decode()
@@ -61,8 +65,9 @@ class Base64(Mode):
 
 # context
 class ChatClient:
-    def __init__(self) -> None:
-        self._mode: Mode = PlainText()
+    # init with default mode of PlainText()
+    def __init__(self, mode: Mode = PlainText()) -> None:
+        self._mode = mode
 
     def set_mode(self, mode: Mode) -> None:
         self._mode = mode

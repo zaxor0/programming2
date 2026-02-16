@@ -2,33 +2,35 @@
 title: Chat Client
 ---
 classDiagram
-    ChatClient *-- Mode
+    ChatClient *-- Mode : has-a
     Mode <|.. PlainText
     Mode <|.. Encrypted
     Mode <|.. Compressed
     Mode <|.. Base64
     class ChatClient{
-        -mode _mode
-        +set_mode() None
-        +send() string
+        -mode: Mode
+        +__init__(mode: Mode)
+        +set_mode(mode: Mode) None
+        +send(message: string) string
     }
     class Mode{
         <<interface>>
-        +transform_message() string
+        +transform_message(message: string) string
     }
     class PlainText{
-        +transform_message() string
+        +transform_message(message: string) string
         +__str__() string
     }
     class Encrypted{
-        +transform_message() string
+        +transform_message(message: string) string
         +__str__() string
     }
     class Compressed{
-        +transform_message() string
+        +transform_message(message: string) string
         +__str__() string
     }
     class Base64{
-        +transform_message() string
+        +transform_message(message: string) string
         +__str__() string
     }
+
