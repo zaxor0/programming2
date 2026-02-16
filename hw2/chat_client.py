@@ -38,7 +38,11 @@ class Compressed(Mode):
 
 class Base64(Mode):
     def transform_message(self, message: str) -> str:
-        processed = b64encode(message)
+        # the base64 method doesn't work with a string, I had to convert it to a "bytes-like object" using encode()
+        # however, this returns as a bytes object, and I want a string, so I had to then use decode()
+        # https://stackoverflow.com/questions/7585435/how-to-convert-string-to-bytes-in-python-3
+        processed_bytes = b64encode(message.encode())
+        processed = processed_bytes.decode()
         return processed
 
     def __str__(self):
