@@ -1,0 +1,34 @@
+---
+title: Chat Client
+---
+classDiagram
+    ChatClient *-- Mode
+    Mode <|.. PlainText
+    Mode <|.. Encrypted
+    Mode <|.. Compressed
+    Mode <|.. Base64
+    class ChatClient{
+        -mode _mode
+        +set_mode() None
+        +send() string
+    }
+    class Mode{
+        <<interface>>
+        +transform_message() string
+    }
+    class PlainText{
+        +transform_message() string
+        +__str__() string
+    }
+    class Encrypted{
+        +transform_message() string
+        +__str__() string
+    }
+    class Compressed{
+        +transform_message() string
+        +__str__() string
+    }
+    class Base64{
+        +transform_message() string
+        +__str__() string
+    }
