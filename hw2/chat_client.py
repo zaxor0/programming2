@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from base64 import b64encode
 
 # Why use Strategy
 
@@ -35,10 +36,13 @@ class Compressed(Mode):
     def __str__(self):
         return "COMPRESSED"
 
-class Vowels(Mode):
-    def __str__(self):
-        return "COMPRESSED"
+class Base64(Mode):
+    def transform_message(self, message: str) -> str:
+        processed = b64encode(message)
+        return processed
 
+    def __str__(self):
+        return "BASE64"
 
 # context
 class ChatClient:
@@ -63,6 +67,9 @@ def main() -> None:
     client.send("Hello World")
 
     client.set_mode(Compressed())
+    client.send("Hello World")
+
+    client.set_mode(Base64())
     client.send("Hello World")
 
 
