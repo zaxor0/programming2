@@ -2,18 +2,24 @@
 
 ## Part 1: Code Analysis:
 1. What are the design problems with ChatClient?
-    - When we need to add any new ways of sending a messages, we have to add another if statement inside the send method.
+    - The client doesnt need to know what algorithm we are using to modify the message
+    - it exposes our algorithms we use on the message
+
 2. Why does the use of conditionals make the code hard to extend and maintain?
-    - 
+    - When we need to add any new ways of sending a messages, we have to add another if statement inside the send method.
+    - any changes, modifications, or variations made have to occur in the main class
+    - any bugs would be difficult to troubleshoot
 
 ## Part 2: Pattern Decision
 Which pattern is more appropriate, Strategy or State? Answer the following questions:
 1. Does the behavior change because the *client configures it*, or because the object *changes over time*?
     - The behavior changes becuase the client selected the method of sending the messaging.
+    - the client does not need to change over time, it just needs to send messages
 2. Who is responsible for switching the behavior: the client or the object itself?
     - the client does this, it has a `set_mode` method.
 3. Based on your answers, which pattern is the correct choice and why?
     - it seems that the strategy pattern is best here, we would not have to have so many IF statements
+    - we can more easily add new methods to modifying the message
 
 ## Part 3: Refactoring
 If you choose Strategy:
@@ -32,4 +38,5 @@ Provide a UML class diagram that clearly shows:
 - All concrete strategy or state classes
 - The relationship type used, composition or association
 
-
+### UML Diagram
+![Made with Mermaid](diagram.png "UML Diagram")
