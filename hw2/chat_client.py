@@ -2,7 +2,18 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from base64 import b64encode
 
-# Why use Strategy
+# Why I chose the Strategy Pattern
+"""
+Problems with State in our use case:
+1. The state model is used when the object itself is changing, but in our case it is not the client object but the *message* that is changing.
+2. The class behavior (ChatClient) does not depend on a state, it will send messages the same way for each message transformation type.
+Why Strategy works:
+1. We are always doing the same task, sending a message, we just want to do this task in different ways. 
+2. We can replace the many behaviors (all the ifs / conditionals) by moving behavior specific strategies into individual classes. 
+3. Now we no longer need those conditionals, and the client or user can simply select the desired behavior. 
+Therefore, it is more appropriate for the user to select a 'strategy' for how to manipulate the message.
+Additionally, we can easily add more classes (see my Base64 example) to extend the features of the chat client. 
+"""
 
 # strategy interface
 class Mode(ABC):
@@ -17,7 +28,7 @@ class PlainText(Mode):
         processed = message
         return processed
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "PLAIN"
 
 class Encrypted(Mode):
@@ -25,7 +36,7 @@ class Encrypted(Mode):
         processed = message[::-1]
         return processed
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "ENCRYPTED"
 
 class Compressed(Mode):
@@ -33,7 +44,7 @@ class Compressed(Mode):
         processed = "".join(ch for ch in message if ch.lower() not in "aeiou")
         return processed
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "COMPRESSED"
 
 class Base64(Mode):
@@ -45,7 +56,7 @@ class Base64(Mode):
         processed = processed_bytes.decode()
         return processed
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "BASE64"
 
 # context
