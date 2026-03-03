@@ -8,11 +8,11 @@ from abc import ABC, abstractmethod
 - Compared to memento from HW1, it creates a system for commands that could be applied to other targets, like a document or photo. This overall is just moreusable.
 
 2. Why is it a better fit here than the other pattern?
-- In memento, the originator was a complicated object with many methods, Command Pattern lets us simplify that object. 
-- 
-
+- In memento, the originator was a complicated object with many methods, Command Pattern lets us simplify that object.
+- As stated earlier, adding more commands is less complicated, the video editor version of the action can be simple and a new "command" class would be single purpose. 
 
 3. What is the main tradeoff of your choice?
+- there are more classes, but even worse is the command classes need to line up with the methods of the video editor. So you have to make new features in both spots.
 
 """
 

@@ -13,6 +13,8 @@ classDiagram
     RevertableCmd ..|> Cmd
 
     class VideoEditor{
+        -_contrast float
+        -_text string
         +set_text() None
         +remove_text() None
         +get_contrast() float
@@ -21,6 +23,7 @@ classDiagram
         
     }
     class History{
+        -_commands list
         +push() None
         +pop() RevertableCmd
         +__len__() int
@@ -28,6 +31,9 @@ classDiagram
     History o-- "0..*" RevertableCmd : stores
 
     class SetTextCmd{
+        -_editor VideoEditor
+        -_history History
+        -_payload string
         +execute() None
         +unexecute() None
     }
@@ -36,6 +42,9 @@ classDiagram
     SetTextCmd --> History : pushes self
 
     class SetContrastCmd{
+        -_editor VideoEditor
+        -_history History
+        -_payload float
         +execute() None
         +unexecute() None
     }
@@ -44,6 +53,8 @@ classDiagram
     SetContrastCmd --> History : pushes self
 
     class RemoveTextCmd{
+        -_editor VideoEditor
+        -_history History
         +execute() None
         +unexecute() None
     }
@@ -56,10 +67,3 @@ classDiagram
     }
     UndoCmd ..|> Cmd
     UndoCmd --> History : pops last
-
-    
-    
-    
-    
-    
-
