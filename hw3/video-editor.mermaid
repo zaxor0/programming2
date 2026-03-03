@@ -2,11 +2,18 @@
 title: Video Editor
 ---
 classDiagram
-    Cmd <|.. RevertableCmd
-    Cmd <|.. UndoCmd
-    RevertableCmd <|.. SetTextCmd
-    RevertableCmd <|.. SetContrastCmd
-    RevertableCmd <|.. RemoveTextCmd
+    History o-- "0..*" RevertableCmd : stores
+    
+    SetTextCmd --> VideoEditor : receiver
+    SetContrastCmd --> VideoEditor : receiver
+    RemoveTextCmd --> VideoEditor : receiver
+
+    SetTextCmd --> History : pushes self
+    SetContrastCmd --> History : pushes self
+    RemoveTextCmd --> History : pushes self
+
+    UndoCmd --> History : pops last
+
     class Cmd{
         +execute() None
     }
@@ -14,8 +21,9 @@ classDiagram
         +execute() None
         +unexecute() None
     }
+    RevertableCmd ..|> Cmd
+
     class VideoEditor{
-        +__init__() None
         +set_text() None
         +remove_text() None
         +get_contrast() float
@@ -24,28 +32,30 @@ classDiagram
         
     }
     class History{
-       +__init__() None
         +push() None
         +pop() RevertableCmd
         +__len__() int
     }
     class SetTextCmd{
-       +__init__() None
         +execute() None
         +unexecute() None
     }
+    SetTextCmd ..|> RevertableCmd
+
     class SetContrastCmd{
-       +__init__() None
         +execute() None
         +unexecute() None
     }
+    SetContrastCmd ..|> RevertableCmd
+
     class RemoveTextCmd{
-       +__init__() None
         +execute() None
         +unexecute() None
     }
+    RemoveTextCmd ..|> RevertableCmd
+
     class UndoCmd{
-       +__init__() None
         +execute() None
     }
+    UndoCmd ..|> Cmd
 
