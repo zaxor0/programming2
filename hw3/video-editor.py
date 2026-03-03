@@ -5,17 +5,15 @@ from abc import ABC, abstractmethod
 """
 1. What is the key idea of your chosen pattern?
 - I like the command pattern because the commands or actions are extensible. Specifically, we could add logging for each exection. We could also add a queue mechanism, something like at timestamp X add text "title screen."
-- Compared to memento from HW1, it creates a system for commands that could be applied to other targets, like a document or photo. This overall is just moreusable.
+- Compared to memento from HW1, it creates a system for commands that could be applied to other targets, like a document or photo, overall it is more reusable.
 
 2. Why is it a better fit here than the other pattern?
-- In memento, the originator was a complicated object with many methods, Command Pattern lets us simplify that object.
+- In memento, the originator was a complicated object with many complicated methods, Command Pattern lets us simplify that object.
 - As stated earlier, adding more commands is less complicated, the video editor version of the action can be simple and a new "command" class would be single purpose. 
 
 3. What is the main tradeoff of your choice?
-- there are more classes, but even worse is the command classes need to line up with the methods of the video editor. So you have to make new features in both spots.
-
+- There are more classes, but even worse is the command classes need to line up with the methods of the video editor. So you have to make new features in both spots.
 """
-
 
 ## INTERFACE 
 class Cmd(ABC):
@@ -69,7 +67,6 @@ class History:
 
 
 ## CONCRETE COMMANDS 
-
 class SetTextCmd(RevertableCmd):
     def __init__(self, editor: VideoEditor, history: History, new_text: str) -> None:
         self._editor = editor
@@ -156,7 +153,7 @@ def main():
     undo.execute()
     print(editor)
 
-
+    print(f"Final contrast {editor.get_contrast()}")
 
 if __name__ == "__main__":
     main()
