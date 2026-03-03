@@ -1,15 +1,31 @@
 #!/usr/bin/python3
-
 from abc import ABC, abstractmethod
+
+## ANSWERS
+"""
+1. What is the key idea of your chosen pattern?
+- I like the command pattern because the commands or actions are extensible. Specifically, we could add logging for each exection. We could also add a queue mechanism, something like at timestamp X add text "title screen."
+- Compared to memento from HW1, it creates a system for commands that could be applied to other targets, like a document or photo. This overall is just moreusable.
+
+2. Why is it a better fit here than the other pattern?
+- In memento, the originator was a complicated object with many methods, Command Pattern lets us simplify that object. 
+- 
+
+
+3. What is the main tradeoff of your choice?
+
+"""
+
 
 ## INTERFACE 
 class Cmd(ABC):
     @abstractmethod
     def execute(self) -> None:
+        """execute the command"""
         pass
 
-# undoable is too ambiguous it could mean something that is able to be "undone" but it can mean not possible to do
-# instead I am using revertable, because you can revert the change, and this gets rid of the "un" which often implis opposite or not.
+# I find "undoable" is somewhat ambiguous as it could mean something that is able to be "undone" but it can also mean not possible to do
+# Instead I am using revertable, because you can revert the change; by removing the "un" prefix it removes the "negative" implication of undo.
 class RevertableCmd(Cmd):
     @abstractmethod
     def unexecute(self) -> None:
@@ -112,24 +128,19 @@ class UndoCmd(Cmd):
 def main():
     editor = VideoEditor()
     history = History()
+    print(f"Intital State:\n{editor}\n")
 
-    print(editor)
     # user actions
     set_text = SetTextCmd(editor, history, "Intro")
     set_text.execute()
-
     print(editor)
 
-    # user actions
     set_contrast = SetContrastCmd(editor, history, 0.8)
     set_contrast.execute()
-
     print(editor)
 
-    # user actions
     remove_text = RemoveTextCmd(editor, history)
     remove_text.execute()
-
     print(editor)
 
     undo = UndoCmd(history)
@@ -141,7 +152,6 @@ def main():
 
     undo.execute()
     print(editor)
-
 
     undo.execute()
     print(editor)
