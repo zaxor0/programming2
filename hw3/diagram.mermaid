@@ -1,0 +1,65 @@
+---
+title: Video Editor
+---
+classDiagram
+    
+    class Cmd{
+        +execute() None
+    }
+    class RevertableCmd{
+        +execute() None
+        +unexecute() None
+    }
+    RevertableCmd ..|> Cmd
+
+    class VideoEditor{
+        +set_text() None
+        +remove_text() None
+        +get_contrast() float
+        +set_contrast() None
+        +__str__() string
+        
+    }
+    class History{
+        +push() None
+        +pop() RevertableCmd
+        +__len__() int
+    }
+    History o-- "0..*" RevertableCmd : stores
+
+    class SetTextCmd{
+        +execute() None
+        +unexecute() None
+    }
+    SetTextCmd ..|> RevertableCmd
+    SetTextCmd --> VideoEditor : receiver
+    SetTextCmd --> History : pushes self
+
+    class SetContrastCmd{
+        +execute() None
+        +unexecute() None
+    }
+    SetContrastCmd ..|> RevertableCmd
+    SetContrastCmd --> VideoEditor : receiver
+    SetContrastCmd --> History : pushes self
+
+    class RemoveTextCmd{
+        +execute() None
+        +unexecute() None
+    }
+    RemoveTextCmd ..|> RevertableCmd
+    RemoveTextCmd --> VideoEditor : receiver
+    RemoveTextCmd --> History : pushes self
+
+    class UndoCmd{
+        +execute() None
+    }
+    UndoCmd ..|> Cmd
+    UndoCmd --> History : pops last
+
+    
+    
+    
+    
+    
+
