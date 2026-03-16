@@ -37,7 +37,7 @@ class LightOnCommand(RevertableCmd):
         self.execute()
 
     def execute(self) -> None:
-        # only turn on and add to history if the light was off, no need to stack the histoy full of on commands
+        # only turn on and add to history if the light was off, no need to fill the history "on commands"
         if not self._light.on:
             self._prev_state = self._light.on 
             self._light.on = True
@@ -57,7 +57,7 @@ class SetFanSpeedCommand(RevertableCmd):
         # only change speed if its different
         if self._fan.speed != speed:
             self._prev_state = self._fan.speed
-            self._fan.speed_state = speed
+            self._fan.speed = speed
             self._history.push(self)
 
     def unexecute(self) -> None:
@@ -102,8 +102,9 @@ class RemoteControl():
         self._history.push(cmd)
 
     def undo(self):
-        last_cmd = self._history.pop()
-        last_cmd.unexecute()
+        if len(self._history) > 0:
+            last_cmd = self._history.pop()
+            last_cmd.unexecute()
 
 
 def main():
@@ -137,6 +138,11 @@ def main():
     print(light)
     print(fan)
     print(player)
+
+    remote.undo()
+    remote.undo()
+    remote.undo()
+    remote.undo()
 
 if __name__ == "__main__":
     main()
