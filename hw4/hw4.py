@@ -17,6 +17,8 @@ from dataclasses import dataclass
     - The command functions are single responsibility
     - The whole script is open, as we can easly add more commands and data types without changine the core classes
     - We can now create composition / macro commands if we want
+    - keeping the data classes separate from the commands lets us extend the commands without modifying the original classes too
+    - We could also add other classes like dimmable lights.
 """
 
 
