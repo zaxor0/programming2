@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+# these data classes are RECEIVERS that get new content/states via the CONCRETE COMMANDS
 @dataclass
 class Light:
     _on: bool = False
@@ -52,7 +52,7 @@ class RevertableCmd(Cmd):
         """Undo the effect of execute()."""
         pass
 
-## CONCRETE COMMANDS 
+## The INVOKER calls these CONCRETE COMMANDS to update the RECIEVERS
 class LightOnCommand(RevertableCmd):
     def __init__(self, light: Light) -> None:
         self._light = light
@@ -69,6 +69,9 @@ class LightOnCommand(RevertableCmd):
     def unexecute(self) -> None:
         self._light.on = self._prev_state
 
+    def __str__(self):
+        return f"Setting light on"
+
 class LightOffCommand(RevertableCmd):
     def __init__(self, light: Light) -> None:
         self._light = light
@@ -84,6 +87,9 @@ class LightOffCommand(RevertableCmd):
 
     def unexecute(self) -> None:
         self._light.on = self._prev_state
+
+    def __str__(self):
+        return f"Setting light off"
 
 class SetFanSpeedCommand(RevertableCmd):
     def __init__(self, fan: Fan, speed: int) -> None:
@@ -102,6 +108,9 @@ class SetFanSpeedCommand(RevertableCmd):
     def unexecute(self) -> None:
         self._fan.speed = self._prev_state
 
+    def __str__(self):
+        return f"Setting fan speed {self._payload}"
+
 class PlaySongCommand(RevertableCmd):
     def __init__(self, music_player: MusicPlayer, song: str) -> None:
         self._music_player = music_player
@@ -116,6 +125,9 @@ class PlaySongCommand(RevertableCmd):
 
     def unexecute(self) -> None:
         self._music_player.song = self._prev_state
+
+    def __str__(self):
+        return f"Playing song {self._payload}"
 
 class StopSongCommand(RevertableCmd):
     def __init__(self, music_player: MusicPlayer) -> None:
@@ -134,6 +146,9 @@ class StopSongCommand(RevertableCmd):
     def unexecute(self) -> None:
         self._music_player.song = self._prev_state
 
+    def __str__(self):
+        return f"Stopping song {self._prev_state}"
+
 # STACK FOR UNDO OPERATIONS
 class History:
     def __init__(self) -> None:
@@ -148,7 +163,7 @@ class History:
     def __len__(self) -> int:
         return len(self._commands)
 
-# INVOKER 
+# The INVOKER which calls the CONCRETE COMMANDS to makes changes to the RECEIVERS (dataclasses)
 class RemoteControl():
     def __init__(self):
         self._name = "my remote"
@@ -156,10 +171,10 @@ class RemoteControl():
 
     def submit(self, cmd):
         if cmd.execute():
-            print("successful command")
+            print(f"+Executed Command:\t{cmd}")
             self._history.push(cmd)
         else:
-            print("did not run command")
+            print(f"-Did not execute:\t{cmd}")
 
     def undo(self):
         if len(self._history) > 0:
