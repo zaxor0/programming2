@@ -3,36 +3,41 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-## WRITTEN ANSWER
-"""
-1. This is a command pattern, which gives us an interface for commands, which can be revertable.
-2. Class explanations:
-    - We have a few data classes that represent objects in our house that have "states" such as being on or performing an action
-    - The we have several command classes, which depend on the dataclasses to exist, that change the settings for data class
-        - This _might_ seem bad, but its actually good, because it lets our commands have a single responsibility
-        - That would let us build out macro commands easier, such as setting a scene with one "button"
-    - Next we have the history, this is used in the remote and command classes. It is a basic stack that we need for "undo" type actions
-    - Last we have the remote, this is our reciever, that we pass commands to it and it simply invokes them.
-3. This design, besides removed conditionals, accomplishses the following:
-    - The command functions are single responsibility
-    - The whole script is open, as we can easly add more commands and data types without changine the core classes
-    - We can now create composition / macro commands if we want
-    - keeping the data classes separate from the commands lets us extend the commands without modifying the original classes too
-    - We could also add other classes like dimmable lights.
-"""
-
-
 @dataclass
 class Light:
-    on: bool = False
+    _on: bool = False
+
+    @property
+    def on(self):
+        return self._on
+
+    @on.setter
+    def on(self, new_value: bool) -> None:
+        self._on = new_value
 
 @dataclass
 class Fan:
-    speed: int = 0
+    _speed: int = 0
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, new_value: int) -> None:
+        self._speed = new_value
 
 @dataclass
 class MusicPlayer:
-    song: str = None
+    _song: str = None
+
+    @property
+    def song(self):
+        return self._song
+
+    @song.setter
+    def song(self, new_value: str) -> None:
+        self._song = new_value
 
 ## INTERFACE 
 class Cmd(ABC):
@@ -51,15 +56,15 @@ class RevertableCmd(Cmd):
 class LightOnCommand(RevertableCmd):
     def __init__(self, light: Light) -> None:
         self._light = light
-        self._history = History()
         self._prev_state = None
 
     def execute(self) -> None:
-        # turn on and add to history only if the light was off, no need to fill the history "on commands"
+        # turn on only if the light was off
         if not self._light.on:
             self._prev_state = self._light.on 
             self._light.on = True
-            self._history.push(self)
+            return True
+        return False
 
     def unexecute(self) -> None:
         self._light.on = self._prev_state
@@ -67,15 +72,15 @@ class LightOnCommand(RevertableCmd):
 class LightOffCommand(RevertableCmd):
     def __init__(self, light: Light) -> None:
         self._light = light
-        self._history = History()
         self._prev_state = None
 
     def execute(self) -> None:
-        # turn off and add to history only if the light was on, no need to fill the history "off commands"
+        # turn off only if the light was on
         if self._light.on:
             self._prev_state = self._light.on 
             self._light.on = False
-            self._history.push(self)
+            return True
+        return False
 
     def unexecute(self) -> None:
         self._light.on = self._prev_state
@@ -83,7 +88,6 @@ class LightOffCommand(RevertableCmd):
 class SetFanSpeedCommand(RevertableCmd):
     def __init__(self, fan: Fan, speed: int) -> None:
         self._fan = fan
-        self._history = History()
         self._prev_state = None
         self._payload = speed
 
@@ -92,7 +96,8 @@ class SetFanSpeedCommand(RevertableCmd):
         if self._fan.speed != self._payload:
             self._prev_state = self._fan.speed
             self._fan.speed = self._payload
-            self._history.push(self)
+            return True
+        return False
 
     def unexecute(self) -> None:
         self._fan.speed = self._prev_state
@@ -100,7 +105,6 @@ class SetFanSpeedCommand(RevertableCmd):
 class PlaySongCommand(RevertableCmd):
     def __init__(self, music_player: MusicPlayer, song: str) -> None:
         self._music_player = music_player
-        self._history = History()
         self._prev_state = None
         self._payload = song
 
@@ -108,7 +112,7 @@ class PlaySongCommand(RevertableCmd):
         # since its reasonable someone would want to re-listen to a song, no comparison for this one
         self._prev_state = self._music_player.song
         self._music_player.song = self._payload
-        self._history.push(self)
+        return True
 
     def unexecute(self) -> None:
         self._music_player.song = self._prev_state
@@ -116,15 +120,16 @@ class PlaySongCommand(RevertableCmd):
 class StopSongCommand(RevertableCmd):
     def __init__(self, music_player: MusicPlayer) -> None:
         self._music_player = music_player
-        self._history = History()
         self._prev_state = None
 
     def execute(self) -> None:
-        # stop the song and add it to history only if there was a song playing
+        # stop the song only if there was a song playing
         if self._music_player.song:
+            cmd_success = True
             self._prev_state = self._music_player.song
             self._music_player.song = None
-            self._history.push(self)
+            return True
+        return False 
 
     def unexecute(self) -> None:
         self._music_player.song = self._prev_state
@@ -143,15 +148,18 @@ class History:
     def __len__(self) -> int:
         return len(self._commands)
 
-# RECEIVER
+# INVOKER 
 class RemoteControl():
     def __init__(self):
         self._name = "my remote"
         self._history = History()
 
     def submit(self, cmd):
-        self._history.push(cmd)
-        cmd.execute()
+        if cmd.execute():
+            print("successful command")
+            self._history.push(cmd)
+        else:
+            print("did not run command")
 
     def undo(self):
         if len(self._history) > 0:
@@ -173,8 +181,9 @@ def main():
     print(player)
 
     print("\n## RUNNING COMMANDS")
-    print("...turn light on, set fan to 3, play \"blue train\"")
+    print("...turn light on, set fan to 3 twice, play \"blue train\"")
     remote.submit(LightOnCommand(light))
+    remote.submit(SetFanSpeedCommand(fan, 3))
     remote.submit(SetFanSpeedCommand(fan, 3))
     remote.submit(PlaySongCommand(player, "Blue Train"))
 
