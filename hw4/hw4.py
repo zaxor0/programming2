@@ -58,7 +58,7 @@ class LightOnCommand(RevertableCmd):
         self._light = light
         self._prev_state = None
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         # turn on only if the light was off
         if not self._light.on:
             self._prev_state = self._light.on 
@@ -77,7 +77,7 @@ class LightOffCommand(RevertableCmd):
         self._light = light
         self._prev_state = None
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         # turn off only if the light was on
         if self._light.on:
             self._prev_state = self._light.on 
@@ -97,7 +97,7 @@ class SetFanSpeedCommand(RevertableCmd):
         self._prev_state = None
         self._payload = speed
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         # only change speed if its different
         if self._fan.speed != self._payload:
             self._prev_state = self._fan.speed
@@ -117,7 +117,7 @@ class PlaySongCommand(RevertableCmd):
         self._prev_state = None
         self._payload = song
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         # since its reasonable someone would want to re-listen to a song, no comparison for this one
         self._prev_state = self._music_player.song
         self._music_player.song = self._payload
@@ -134,10 +134,9 @@ class StopSongCommand(RevertableCmd):
         self._music_player = music_player
         self._prev_state = None
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         # stop the song only if there was a song playing
         if self._music_player.song:
-            cmd_success = True
             self._prev_state = self._music_player.song
             self._music_player.song = None
             return True
